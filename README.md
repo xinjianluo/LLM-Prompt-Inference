@@ -43,7 +43,7 @@ python 1-2_attack_1_main.py
 
 ### Step 4: Run Attack 2
 > In this demo, to reduce compute cost, we assume access to the token set of the target dataset.
-Alternatively, you can choose to replace `tgtdataset.catids` in `2-1_attack_2_aug_gen.py` with the full LLM vocabulary, but this will significantly increase runtime.
+Alternatively, you can choose to replace `tgtdataset.catids` in `2-1_attack_2_aug_gen.py` with the full LLM vocabulary, this will produce similar results but significantly increase runtime.
 
 
 First, we generate the token set of the target dataset:
