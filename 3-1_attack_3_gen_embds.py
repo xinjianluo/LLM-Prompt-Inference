@@ -22,9 +22,7 @@ def registerHooks(model, layer, modeldir):
     modelname = getmodelname(modeldir)
     # register forward hooks on the layers of choice
     # it will automatically raise an error if cannot find the corresponding attributes in the model instance
-    
-    # ! huggingface-cli login
-    # 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
+
     logging.critical(f"Registering hooks for model {modelname} and layer {layer}")
     if modelname == "microsoft/phi-2":
         h1 = model.model.embed_tokens.register_forward_hook(getActivation('token_embeddings'))
