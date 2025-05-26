@@ -1,0 +1,17 @@
+name: prompt-inference-env
+channels:
+  - defaults
+  - conda-forge
+  - pytorch
+  - nvidia
+dependencies:
+  - python=3.12
+  - pytorch=2.4.1  # or adjust based on your version
+  - torchvision     # often paired with pytorch
+  - torchaudio
+  - pytorch-cuda=11.8
+  - numpy=1.26.*
+  - tqdm=4.66.*
+  - pip
+  - pip:
+      - transformers==4.49.0
