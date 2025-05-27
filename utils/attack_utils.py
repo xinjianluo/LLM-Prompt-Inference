@@ -60,6 +60,7 @@ class MLPRegressor(nn.Module):
         
 class MLPClassHead(nn.Module):
     def __init__(self, input_dim, embed_dim, DICTSIZE, pretrainedModelPath=None): 
+        # This parameter "pretrainedModelPath" is for class "MLPRegressor"
         super(MLPClassHead, self).__init__()
         self.mlp = MLPRegressor(input_dim, embed_dim)
         if pretrainedModelPath is not None: 

@@ -79,12 +79,22 @@ python 3-3_attack_3_beam_search.py
 ```
 
 ### Step 6: Test Attack Models
-Run:
+Before testing, you may replace the value of `TestPrompt` in `config.ini` with any prompt of your choice.
+
+After that, run:
 ```bash
 python 4-1_attack_model_testing.py
 ```
 
 > **Tip**. Inaccurate prompt reconstructions are expected in this step, if you only train the attack model on a limited number of samples. Try to set `RunningSamples` to `-1` in `config.ini` for a full evaluation.
+
+Or, you can also test our pretrained attack models:
+```bash
+python 4-2_attack_model_pretrained_testing.py
+```
+
+> **Tip**. The reconstruction performance may not be perfect, as the models are trained only on a small dataset, `Wikitext2`. However, for most prompts, the attack performance should align with the results reported in our paper, i.e., achieving over `90%` token-level reconstruction accuracy.
+
 
 ## Citation
 If you use this codebase or build upon our work, please cite the following:
