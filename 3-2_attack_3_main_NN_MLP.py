@@ -15,7 +15,6 @@ from utils.llm_utils import loadModel, loadTokenizer, getmodelname, getDictsizeA
 from utils.dataset_utils import WordbyWordDataset, readDataset, filterDatasetFreqs, readRandomDatasetforAdv3, SemiSupervisedDataset
 from utils.attack_utils import MLPRegressor, MLPClassHead
 
-
 def tester(model, testloader, loss_fn, device, mode="reg"):
     '''   
         model: reg or cla
@@ -42,7 +41,6 @@ def trainer(model, optimizer, tdataset, device, epochs=1, test_interval=1, mode=
     '''
         model: reg or cla
     '''   
-
     trainloss_list = [] 
     testloss_list = []
     if mode == "reg":

@@ -52,13 +52,11 @@ def find_pairs(tensor, max_len=20):
     pairs = []
     n = len(tensor)
     i = 0
-
     # Loop through the tensor to form pairs
     while i < n:
         if tensor[i] == -1:
             i += 1
             continue
-
         # Now we try to maximize j while ensuring j - i < 20
         max_j = -1
         for k in range(i + 1, min(i + max_len, n)):
@@ -78,7 +76,6 @@ def find_pairs(tensor, max_len=20):
                         break
                 pairs.append((i, tk))
                 i = tk  # Set i to max_j for the next pair
-    
     return pairs
     
 # ------------------------------------------------------------------

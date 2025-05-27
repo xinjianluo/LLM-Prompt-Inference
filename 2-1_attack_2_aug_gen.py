@@ -228,13 +228,3 @@ del model
 gc.collect()
 
 logging.critical("All finished!")
-
-
-
-
-
-
-
-
-
-

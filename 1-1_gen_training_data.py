@@ -195,8 +195,3 @@ logging.critical("Cleaning files finished!\n")
 
 logging.critical(f"Logs were written to {logfilename}")    
 logging.critical("All finished!")
-
-
-
-
-

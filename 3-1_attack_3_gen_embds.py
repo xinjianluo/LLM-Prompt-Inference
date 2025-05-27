@@ -9,7 +9,6 @@ import logging
 from utils.running_utils import get_gpu_device, checkCreateFolder, resetRandomStates, print_gpu_memory, initlogging, readConfigFile
 from utils.llm_utils import getDictsizeAndEOSID, loadModel, loadTokenizer, getmodelname
 
-    
 ########################################
 # DONOT move these two functions, cause they need global variable 'activation'
 def getActivation(name):
@@ -199,7 +198,4 @@ logging.critical("Cleaning files finished!\n")
 
 logging.critical(f"Logs were written to {logfilename}") 
 logging.critical("All finished!")
-
-
-
 

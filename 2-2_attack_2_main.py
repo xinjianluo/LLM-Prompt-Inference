@@ -16,7 +16,6 @@ from utils.running_utils import get_gpu_device, progressWrapper, initlogging, re
 from utils.attack_utils import tester, trainer, MLPRegressor, MLPClassHead
 from utils.dataset_utils import WordbyWordDataset, AugmentedWordbyWordDataset  
 
-    
 def count_files_with_prefix(folder_path, prefix):
     return sum(
         1 for filename in os.listdir(folder_path)
@@ -98,5 +97,3 @@ if __name__ == "__main__":
         gc.collect()
     logging.critical(f"Writing log to {logfilename}")
     logging.critical("All finished!")
-
-
