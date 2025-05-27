@@ -88,8 +88,16 @@ python 4-1_attack_model_testing.py
 
 > **Tip**. Inaccurate prompt reconstructions are expected in this step, if you only train the attack model on a limited number of samples. Try to set `RunningSamples` to `-1` in `config.ini` for a full evaluation.
 
-Or, you can also test our pretrained attack models:
+Or, you can also **test our pretrained attack models** as follows.
+1. Download the pretrained attack models:
 ```bash
+cd pretrained/
+gdown 1M0BzOTfbl2IDrKv2bessF-pasrte8ZDF
+gdown 1xdqb1sGDFolyruTRnWztUe7GNMPrEOR1
+```
+2. Run the test script:
+```bash
+cd ..
 python 4-2_attack_model_pretrained_testing.py
 ```
 
