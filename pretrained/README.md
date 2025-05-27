@@ -1,7 +1,7 @@
 # The Folder for Pretrained Attack Models
 
 ## Overview
-This repository contains the following two pretrained models:
+This folder contains the following two pretrained models:
 
 > Gpt2-Wikitext2_Train-MLPClassHead-Finetune-WbyW-cla-layer18.mdl
 
