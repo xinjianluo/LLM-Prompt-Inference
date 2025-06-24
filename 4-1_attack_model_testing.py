@@ -9,6 +9,7 @@ import random
 import os 
 import time 
 import math
+from sentence_transformers import SentenceTransformer, util
 
 from utils.running_utils import get_gpu_device, checkCreateFolder, resetRandomStates, initlogging, readConfigFile, print_gpu_memory
 from utils.llm_utils import loadModel, loadTokenizer, getmodelname, getDictsizeAndEOSID
@@ -52,7 +53,44 @@ def reconstructSTR(yhatlst, tokenizer):
         predtokens.append(tkstr) 
     predstr = tokenizer.decode(predtokens)
     return predstr
+    
+def reconstructRA(yhatlst, ylst):
+    raacc = []
+    ylst = ylst.squeeze()
+    for i in range(len(yhatlst)): 
+        tkstr = yhatlst[i].argmax().item()
+        if tkstr == ylst[i].item(): 
+            raacc.append(1.0)
+        else:
+            raacc.append(0.0)
+    return raacc
 
+def reconstructCSS(recststr, gtstr, semanticLLM):
+    embeddings = semanticLLM.encode([gtstr, recststr])
+    # Compute cosine similarity
+    cosine_similarity = util.pytorch_cos_sim(embeddings[0], embeddings[1]).item()
+    return cosine_similarity
+
+def readTestPrompts(datasetdir, samples=1000):
+    # load dataset
+    if datasetdir == "SQuAD2.0":
+        traindatapath = f".{os.sep}datasets{os.sep}{datasetdir}{os.sep}SQuAD2.0-train-QandA-Pairs.lst"
+    elif datasetdir == "Wikitext2":
+        traindatapath = f".{os.sep}datasets{os.sep}{datasetdir}{os.sep}Wikitext2-Merge-Articles-19771.lst"  # Sorted, from short to long
+    elif datasetdir == "MidjourneyPrompts":
+        traindatapath = f".{os.sep}datasets{os.sep}{datasetdir}{os.sep}MidjourneyPrompts-Prompt-Sorted-123642.lst"  # Sorted, from short to long
+    elif datasetdir == "PrivatePrompts":
+        traindatapath = f".{os.sep}datasets{os.sep}{datasetdir}{os.sep}ProvatePrompts-Length-Sorted-251270.lst"  # Sorted, from short to long    
+    else: 
+        raise ValueError(f'Unsupported datasetdir {datasetdir}')
+    logging.critical(f"Load dataset from {traindatapath}")
+
+    testprompts = torch.load(traindatapath, weights_only=False)
+    if samples <= 0:
+        return testprompts
+    else:
+        return testprompts[:samples]
+        
 # ------------------------------------------------------------------
 if __name__ == "__main__":
     parameters = readConfigFile('config.ini')
@@ -82,6 +120,56 @@ if __name__ == "__main__":
     # register forward hooks on the layers of choice
     h1, h2 = registerHooks(model, layer, modeldir)
 
+    logging.critical("\nLoading semantic evaluation LLM: sentence-bert-base")
+    semanticLLM = SentenceTransformer('efederici/sentence-bert-base')
+    ####################### Compute Reconstruction Accuracy #######################
+    logging.critical("\n----------------- Reconstruction Accuracy -----------------")
+    # Load the pre-trained SBERT model
+    
+    for datasetdir in ("PrivatePrompts", "SQuAD2.0"):
+        testprompts = readTestPrompts(datasetdir, samples=1000)
+        RAlst_1 = []
+        RAlst_2 = []
+        CSSlst_1 = []
+        CSSlst_2 = []
+        for start_id in tqdm(range(0, len(testprompts))):
+            if datasetdir == "SQuAD2.0":
+                question = testprompts[start_id][0]  # for SQuAD2.0
+            else:
+                question = testprompts[start_id]  # for Others
+            
+            activation = {"token_embeddings":[], f"decoderlayer{layer}":[]}
+            encoded_input = tokenizer(question, return_tensors="pt", padding=True)
+            encoded_input['input_ids'] = encoded_input['input_ids'].to(device)
+            encoded_input['attention_mask'] = encoded_input['attention_mask'].to(device)
+            if modeldir == "Bert":
+                encoded_input['token_type_ids'] = encoded_input['token_type_ids'].to(device)
+            ylst = encoded_input['input_ids']
+            with torch.no_grad():
+                output = model(**encoded_input)
+                activation[f"decoderlayer{layer}"] = activation[f"decoderlayer{layer}"][0][0].squeeze()
+                
+                yhat_1 = attackmodel_1(activation[f"decoderlayer{layer}"].float()).detach()
+                recnststr_1 = reconstructSTR(yhat_1, tokenizer)
+                RAlst_1.extend(reconstructRA(yhat_1, ylst))
+                CSSlst_1.append(reconstructCSS(recnststr_1, question, semanticLLM))
+                
+                yhat_2 = attackmodel_2(activation[f"decoderlayer{layer}"].float()).detach()
+                recnststr_2 = reconstructSTR(yhat_2, tokenizer)
+                RAlst_2.extend(reconstructRA(yhat_2, ylst))
+                CSSlst_2.append(reconstructCSS(recnststr_2, question, semanticLLM))
+                
+        logging.critical(f"For test dataset {datasetdir}:")
+        traindataset = datasetdir_2
+        if datasetdir == traindataset:
+            logging.critical(f"\tReconstructed accuracy via Attack 1 (trained on {traindataset}) is:")
+            logging.critical(f"\tToken-Level Acc: {torch.tensor(RAlst_1).mean().item():.4f}, Semantic-level ACC: {torch.tensor(CSSlst_1).mean().item():.4f}\n")
+            
+        logging.critical(f"\tReconstructed accuracy via Attack 2 (trained on {traindataset})  is:")
+        logging.critical(f"\tToken-Level Acc: {torch.tensor(RAlst_2).mean().item():.4f}, Semantic-level ACC: {torch.tensor(CSSlst_2).mean().item():.4f}\n\n")
+    
+    ####################### Reconstruct Toy Prompts #######################
+
     activation = {"token_embeddings":[], f"decoderlayer{layer}":[]}
     encoded_input = tokenizer(text, return_tensors='pt', padding=True) 
         
@@ -90,20 +178,20 @@ if __name__ == "__main__":
 
     activation[f"decoderlayer{layer}"] = activation[f"decoderlayer{layer}"][0][0].squeeze()
         
-    logging.critical("\n----------------------------------")
-    logging.critical("\nGround truth is:")
-    logging.critical(f"{text}\n\n")
+    logging.critical("----------------- Top Example -----------------")
+    logging.critical("Ground truth is:")
+    logging.critical(f"{text}\n")
     
     # ------------------- Attack 1 -------------------
     logging.critical("Reconstructed prompt via Attack 1 is:")
     with torch.no_grad():
         yhat_1 = attackmodel_1(activation[f"decoderlayer{layer}"].float()).detach()
-    logging.critical(f"{reconstructSTR(yhat_1, tokenizer)}\n\n")
+    logging.critical(f"{reconstructSTR(yhat_1, tokenizer)}\n")
 
     # ------------------- Attack 2 -------------------
     logging.critical("Reconstructed prompt via Attack 2 is:")
     with torch.no_grad():
         yhat_2 = attackmodel_2(activation[f"decoderlayer{layer}"].float()).detach()
-    logging.critical(f"{reconstructSTR(yhat_2, tokenizer)}\n\n")
+    logging.critical(f"{reconstructSTR(yhat_2, tokenizer)}\n")
 
     logging.critical("All finished!")
