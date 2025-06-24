@@ -17,3 +17,4 @@ dependencies:
       - transformers==4.49.0
       - gdown==5.2.0
       - sentence_transformers==3.0.1
+      - datasets==3.6.0
