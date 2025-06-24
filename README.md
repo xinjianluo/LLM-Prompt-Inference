@@ -91,13 +91,11 @@ python 4-1_attack_model_testing.py
 Or, you can also **test our pretrained attack models** as follows.
 1. Download the pretrained attack models:
 ```bash
-cd pretrained/
-gdown 1M0BzOTfbl2IDrKv2bessF-pasrte8ZDF
-gdown 1xdqb1sGDFolyruTRnWztUe7GNMPrEOR1
+gdown --output pretrained/ 1M0BzOTfbl2IDrKv2bessF-pasrte8ZDF
+gdown --output pretrained/ 1xdqb1sGDFolyruTRnWztUe7GNMPrEOR1
 ```
 2. Run the test script:
 ```bash
-cd ..
 python 4-2_attack_model_pretrained_testing.py
 ```
 
