@@ -178,7 +178,7 @@ if __name__ == "__main__":
 
     activation[f"decoderlayer{layer}"] = activation[f"decoderlayer{layer}"][0][0].squeeze()
         
-    logging.critical("----------------- Top Example -----------------")
+    logging.critical("----------------- Toy Example -----------------")
     logging.critical("Ground truth is:")
     logging.critical(f"{text}\n")
     
