@@ -6,6 +6,8 @@ This repository contains the official implementation of the experiments describe
 > *Prompt Inference Attack on Distributed Large Language Model Inference Frameworks*
 
 
+![The Overview of Prompt Inference Attack](docs/thumbnail.jpg)
+
 ### Remarks
 1. The original experiments were conducted on a private swarm of [Petals](https://github.com/bigscience-workshop/petals), deployed on a high-performance server with **4× NVIDIA A100-SXM4-40GB GPUs**.
 2. This repository provides a **single-machine** version of the code that runs on a **single GPU**. The results should align with those obtained using the Petals framework.
@@ -101,6 +103,7 @@ python 4-2_attack_model_pretrained_testing.py
 
 > **Tip**. The reconstruction performance may not be perfect, as the models are trained only on a small dataset, `Wikitext2`. However, for most prompts, the attack performance should align with the results reported in our paper, i.e., achieving over `90%` token-level reconstruction accuracy.
 
+> **Note**. To fully reproduce Figure 9 and 11 in our paper, please refer to [additional instructions](docs/ADDINST.md).
 
 ## Citation
 If you use this codebase or build upon our work, please cite the following:
