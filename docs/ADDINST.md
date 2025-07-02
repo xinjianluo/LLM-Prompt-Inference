@@ -18,7 +18,7 @@ In total, sharing all models requires approximately 199 GB of Google Drive space
 
 
 
-## Train Attacks Models in Figure 9
+## Train Attack Models in Figure 9
 First, modify `config.ini`:
 
 1. Set `Attack1` -> `RunningSamples_1` to `-1`.
@@ -32,7 +32,7 @@ python 1-1_gen_training_data.py
 python 1-2_attack_1_main.py
 ```
 
-## Train Attacks Models in Figure 11
+## Train Attack Models in Figure 11
 Similarly, modify `config.ini`:
 
 1. Set `Attack2` -> `RunningSamples_2` to `-1`.
